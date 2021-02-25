@@ -54,6 +54,8 @@ int main(int argc, char *args[])
 
   FILE *input = fopen(args[1], "r");
 
+  bool isComment = false;
+
   printf("\n\nLexeme Table:\n\tLexeme\t\ttoken type\n");
 
   while (!feof(input))
@@ -87,11 +89,21 @@ int main(int argc, char *args[])
       }
     }
 
-    // Here comes the big ladder
-    token = CheckTokenNum(word);
+    if (strcmp(word, "/*") == 0)
+      isComment = true;
 
+    if (!isComment)
+    {
+      // oh no here comes the big ladder
+      token = CheckTokenNum(word);
+      printf("\t%s\t\t%d\n", word, token);
 
-    printf("\t%s\t\t%d\n", word, token);
+      strcat(tokenList, (char)token);
+    }
+
+    else if (strcmp(word, "*/") == 0)
+      isComment = false;
+
   }
 
   fclose(input);
@@ -102,123 +114,123 @@ int main(int argc, char *args[])
 int CheckTokenNum(char *word)
 {
   // this is really ugly I'm not a fan of this but idk what else to do don't sue me
-  if (strcmp(word, "%") == 0)
-  {
-    return 1;
-  }
-  else if (strcmp(word, "+") == 0)
-  {
-    return 4;
-  }
-  else if (strcmp(word, "-") == 0)
-  {
-    return 5;
-  }
-  else if (strcmp(word, "*") == 0)
-  {
-    return 6;
-  }
-  else if (strcmp(word, "/") == 0)
-  {
-    return 7;
-  }
-  else if (strcmp(word, "odd") == 0)
-  {
-    return 8;
-  }
-  else if (strcmp(word, "=") == 0)
-  {
-    return 9;
-  }
-  else if (strcmp(word, "<>") == 0)
-  {
-    return 10;
-  }
-  else if (strcmp(word, "<") == 0)
-  {
-    return 11;
-  }
-  else if (strcmp(word, "<=") == 0)
-  {
-    return 12;
-  }
-  else if (strcmp(word, ">") == 0)
-  {
-    return 13;
-  }
-  else if (strcmp(word, ">=") == 0)
-  {
-    return 14;
-  }
-  else if (strcmp(word, "(") == 0)
-  {
-    return 15;
-  }
-  else if (strcmp(word, ")") == 0)
-  {
-    return 16;
-  }
-  else if (strcmp(word, ",") == 0)
-  {
-    return 17;
-  }
-  else if (strcmp(word, ";") == 0)
-  {
-    currentlyVar = false;
-    return 18;
-  }
-  else if (strcmp(word, ".") == 0)
-  {
-    return 19;
-  }
-  else if (strcmp(word, ":=") == 0)
-  {
-    return 20;
-  }
-  else if (strcmp(word, "begin") == 0)
-  {
-    return 21;
-  }
-  else if (strcmp(word, "end") == 0)
-  {
-    return 22;
-  }
-  else if (strcmp(word, "if") == 0)
-  {
-    return 23;
-  }
-  else if (strcmp(word, "then") == 0)
-  {
-    return 24;
-  }
-  else if (strcmp(word, "while") == 0)
-  {
-    return 25;
-  }
-  else if (strcmp(word, "do") == 0)
-  {
-    return 26;
-  }
-  else if (strcmp(word, "call") == 0)
-  {
-    return 27;
-  }
-  else if (strcmp(word, "const") == 0)
-  {
-    return 28;
-  }
-  else if (strcmp(word, "var") == 0)
-  {
-    currentlyVar = true;
-    return 29;
-  }
-  else
-  {
-    if (currentlyVar)
-      return 2;
+    if (strcmp(word, "%") == 0)
+    {
+      return 1;
+    }
+    else if (strcmp(word, "+") == 0)
+    {
+      return 4;
+    }
+    else if (strcmp(word, "-") == 0)
+    {
+      return 5;
+    }
+    else if (strcmp(word, "*") == 0)
+    {
+      return 6;
+    }
+    else if (strcmp(word, "/") == 0)
+    {
+      return 7;
+    }
+    else if (strcmp(word, "odd") == 0)
+    {
+      return 8;
+    }
+    else if (strcmp(word, "=") == 0)
+    {
+      return 9;
+    }
+    else if (strcmp(word, "<>") == 0)
+    {
+      return 10;
+    }
+    else if (strcmp(word, "<") == 0)
+    {
+      return 11;
+    }
+    else if (strcmp(word, "<=") == 0)
+    {
+      return 12;
+    }
+    else if (strcmp(word, ">") == 0)
+    {
+      return 13;
+    }
+    else if (strcmp(word, ">=") == 0)
+    {
+      return 14;
+    }
+    else if (strcmp(word, "(") == 0)
+    {
+      return 15;
+    }
+    else if (strcmp(word, ")") == 0)
+    {
+      return 16;
+    }
+    else if (strcmp(word, ",") == 0)
+    {
+      return 17;
+    }
+    else if (strcmp(word, ";") == 0)
+    {
+      currentlyVar = false;
+      return 18;
+    }
+    else if (strcmp(word, ".") == 0)
+    {
+      return 19;
+    }
+    else if (strcmp(word, ":=") == 0)
+    {
+      return 20;
+    }
+    else if (strcmp(word, "begin") == 0)
+    {
+      return 21;
+    }
+    else if (strcmp(word, "end") == 0)
+    {
+      return 22;
+    }
+    else if (strcmp(word, "if") == 0)
+    {
+      return 23;
+    }
+    else if (strcmp(word, "then") == 0)
+    {
+      return 24;
+    }
+    else if (strcmp(word, "while") == 0)
+    {
+      return 25;
+    }
+    else if (strcmp(word, "do") == 0)
+    {
+      return 26;
+    }
+    else if (strcmp(word, "call") == 0)
+    {
+      return 27;
+    }
+    else if (strcmp(word, "const") == 0)
+    {
+      return 28;
+    }
+    else if (strcmp(word, "var") == 0)
+    {
+      currentlyVar = true;
+      return 29;
+    }
+    else
+    {
+      if (currentlyVar)
+        return 2;
 
-    if (isdigit(word[(int)strlen(word) - 1]))
-      return 3;
+      if (isdigit(word[(int)strlen(word) - 1]))
+        return 3;
 
-  }
+    }
 }
