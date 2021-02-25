@@ -87,6 +87,7 @@ int main(int argc, char *args[])
   int wordCounter = 0, varCount = 0;
 
   bool isComment = false;
+  bool wordFound = false;
 
   FILE *input = fopen(args[1], "r");
 
@@ -106,16 +107,20 @@ int main(int argc, char *args[])
       {
         // This is a reserved word
         if (IsReserved(word))
-          printf("Reserved word: %s\n", word);
+        {
+          //printf("Reserved word: %s\n", word);
+        }
         else if (!isdigit(character))
         {
           // This is a reserved variable already
           if (varCount > 0 && IsVar(word))
-            printf("Reserved var: %s\n", word);
+          {
+            //printf("Reserved var: %s\n", word);
+          }
           else if (!(strcmp(word, " ") == 0))
           {
             // This is a new variable
-            printf("New var: %s\n", word);
+            //printf("New var: %s\n", word);
             strcpy(varWords[varCount], word);
             varCount++;
           }
@@ -123,16 +128,18 @@ int main(int argc, char *args[])
 
         // Recognize special character
         if (EndOfWord(character) && character != ' ')
-          printf("Special character: %c\n", character);
-      }
+        {
+          //printf("Special character: %c\n", character);
+        }
 
-      // Reset the word
-      memset(word, 0, sizeof(word));
+        wordFound = true;
+      }
     }
     else if (wordCounter == 0 && EndOfWord(character) && character != ' ')
     {
       // Handle special, SPECIAL characters here
       // like /*, */, >=, := etc.
+
       if (character == '/')
       {
         fscanf(input, "%c", &futureChar);
@@ -148,7 +155,7 @@ int main(int argc, char *args[])
           isComment = false;
         else
         {
-          printf("Special character: %c\n", character);
+          //printf("Special character: %c\n", character);
           fseek(input, -1, SEEK_CUR);
         }
       }
@@ -156,7 +163,11 @@ int main(int argc, char *args[])
       {
         fscanf(input, "%c", &futureChar);
         if (futureChar == '=')
-          printf("Special SPECIAL character: %c%c\n", character, futureChar);
+        {
+          token = CheckTokenNum(futureChar);
+
+          printf("\t%s\t\t%d\n", futureChar, token);
+        }
         else
           fseek(input, -1, SEEK_CUR);
       }
@@ -164,7 +175,11 @@ int main(int argc, char *args[])
       {
         fscanf(input, "%c", &futureChar);
         if (futureChar == '>' || futureChar == '=')
-          printf("Special SPECIAL character: %c%c\n", character, futureChar);
+        {
+          token = CheckTokenNum(futureChar);
+
+          printf("\t%s\t\t%d\n", futureChar, token);
+        }
         else
           fseek(input, -1, SEEK_CUR);
       }
@@ -172,13 +187,17 @@ int main(int argc, char *args[])
       {
         fscanf(input, "%c", &futureChar);
         if (futureChar == '=')
-          printf("Special SPECIAL character: %c%c\n", character, futureChar);
+        {
+          token = CheckTokenNum(futureChar);
+
+          printf("\t%s\t\t%d\n", futureChar, token);
+        }
         else
           fseek(input, -1, SEEK_CUR);
       }
       else
       {
-        printf("Special character: %c\n", character);
+        printf("Special character AAAAAAAAA: %c\n", character);
       }
 
     }
@@ -199,52 +218,25 @@ int main(int argc, char *args[])
     int stringLength = 0, token = 0;
 
     // ERROR HANDLING HERE
-    //if (stringLength > 11)
-    //  printf("Error : Identifier names cannot exceed 11 characters");
 
+    if (wordFound)
+    {
+      // Here comes the big ladder
+      token = CheckTokenNum(word);
 
-    // end error handling
-    if(isalpha(character))
-    {
-      //process string
-    }
-    else if(isdigit(character))
-    {
-      //process number
-    }
-    else if(iscntrl(character))
-    {
-      continue;
-    }
-    else
-    {
-      //CheckTokenNum(character);
+      printf("\t%s\t\t%d\n", word, token);
+
+      if (strcmp(word, "end") == 0)
+      {
+        break;
+      }
+
+      // Reset word
+      memset(word, 0, sizeof(word));
+      wordFound = false;
     }
 
-    // Push the pointer back by one if "var" name ends with , or ; or something similar
-    //if (stringLength >= 2)
-    //{
-    //  switch (word[stringLength - 1])
-    //  {
-    //    case ',':
-    //    case ';':
-    //    case '.':
-    //      word[stringLength - 1] = 0;
-    //      fseek(input, -1, SEEK_CUR);
-    //      stringLength = (int)strlen(word);
-    //      break;
-    //    default:
-    //      break;
-    //  }
-    //}
 
-
-
-    // Here comes the big ladder
-    token = CheckTokenNum(word);
-
-
-    //printf("\t%s\t\t%d\n", word, token);
   }
 
   fclose(input);
