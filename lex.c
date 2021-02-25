@@ -48,7 +48,7 @@ bool currentlyVar = false;
 
 int main(int argc, char *args[])
 {
-  char word[100];
+  char character;
 
   char *tokenList = "";
 
@@ -58,7 +58,9 @@ int main(int argc, char *args[])
 
   while (!feof(input))
   {
-    fscanf(input, "%s", word);
+    fscanf(input, "%c", character);
+    if(character == ' ')
+      continue;
 
     int stringLength = (int)strlen(word), token = 0;
 
@@ -69,7 +71,23 @@ int main(int argc, char *args[])
 
 
     // end error handling
-
+    if(isalpha(character))
+    {
+      //process string 
+    }
+    else if(isdigit(character))
+    {
+      //process number
+    }
+    else if(isctrl(character))
+    {
+      continue; 
+    }
+    else
+    {
+      CheckTokenNum(character);  
+    }
+    
     // Push the pointer back by one if "var" name ends with , or ; or something similar
     if (stringLength >= 2)
     {
