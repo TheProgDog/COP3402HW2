@@ -49,7 +49,7 @@ bool currentlyVar = false;
 int main(int argc, char *args[])
 {
   char character;
-
+  int stringlen = 0;
   char *tokenList = "";
 
   FILE *input = fopen(args[1], "r");
@@ -58,7 +58,7 @@ int main(int argc, char *args[])
 
   while (!feof(input))
   {
-    fscanf(input, "%c", character);
+    character = fgetc(input);
     if(character == ' ')
       continue;
 
@@ -66,13 +66,15 @@ int main(int argc, char *args[])
 
 
     // ERROR HANDLING HERE
-    if (stringLength > 11)
-      printf("Error : Identifier names cannot exceed 11 characters");
+    
 
 
     // end error handling
     if(isalpha(character))
     {
+      stringlen++;
+      if (stringlen > 11)
+        printf("Error : Identifier names cannot exceed 11 characters");
       //process string 
     }
     else if(isdigit(character))
