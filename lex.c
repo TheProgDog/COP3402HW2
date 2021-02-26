@@ -190,7 +190,8 @@ int main(int argc, char *args[])
           isComment = false;
         else
         {
-          //printf("Special character: %c\n", character);
+          recent[0] = character;
+          printf("\t%c\t\t%d\n", character, CheckTokenNum(recent));
           fseek(input, -1, SEEK_CUR);
         }
       }
