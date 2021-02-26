@@ -259,8 +259,11 @@ int main(int argc, char *args[])
       {
         word[wordCounter] = character;
         wordCounter++;
-        if(wordCounter > 11)
-           printf("Error : Identifier names cannot exceed 11 characters");
+        
+      }
+      else if(wordCounter > 11)
+      {
+        printf("Error : Identifier names cannot exceed 11 characters");
       }
       else if (!iscntrl(character) && character != ' ')
       {
