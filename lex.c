@@ -135,7 +135,13 @@ int main(int argc, char *args[])
 
         if (strcmp(word, "end") == 0)
         {
-          printf("\t%c\t\t%d\n", character, token);
+          char lastChar[2];
+
+          memset(lastChar, 0, sizeof(lastChar));
+
+          lastChar[0] = character;
+
+          printf("\t%c\t\t%d\n", character, CheckTokenNum(lastChar));
           break;
         }
 
