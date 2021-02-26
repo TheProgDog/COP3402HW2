@@ -87,7 +87,7 @@ int main(int argc, char *args[])
     }
     else
     {
-      CheckTokenNum(character);  
+      token = CheckTokenNum(character);  
     }
     
     // Push the pointer back by one if "var" name ends with , or ; or something similar
@@ -119,10 +119,10 @@ int main(int argc, char *args[])
   return 0;
 }
 
-int CheckTokenNum(char *word)
+int CheckTokenNum(char symbol)
 {
   // this is really ugly I'm not a fan of this but idk what else to do don't sue me
-  if (strcmp(word, "%") == 0)
+  if (symbol == '%')
     return 1;
   else if (strcmp(word, "+") == 0)
     return 4;
