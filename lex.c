@@ -97,6 +97,8 @@ int main(int argc, char *args[])
 
   while (!feof(input))
   {
+    int token = 0;
+
     fscanf(input, "%c", &character);
 
     if((iscntrl(character) || EndOfWord(character)) && wordCounter > 0)
@@ -126,10 +128,33 @@ int main(int argc, char *args[])
           }
         }
 
+        // Here comes the big ladder
+        token = CheckTokenNum(word);
+
+        printf("\t%s\t\t%d\n", word, token);
+
+        if (strcmp(word, "end") == 0)
+        {
+          printf("\t%c\t\t%d\n", character, token);
+          break;
+        }
+
+        // Reset word
+        memset(word, 0, sizeof(word));
+        wordFound = false;
+
         // Recognize special character
         if (EndOfWord(character) && character != ' ')
         {
-          //printf("Special character: %c\n", character);
+          char special[2];
+
+          memset(special, 0, sizeof(special));
+
+          special[0] = character;
+
+          token = CheckTokenNum(special);
+
+          printf("\t%s\t\t%d\n", special, token);
         }
 
         wordFound = true;
@@ -139,6 +164,10 @@ int main(int argc, char *args[])
     {
       // Handle special, SPECIAL characters here
       // like /*, */, >=, := etc.
+
+      char recent[5];
+
+      memset(recent, 0, sizeof(recent));
 
       if (character == '/')
       {
@@ -164,9 +193,12 @@ int main(int argc, char *args[])
         fscanf(input, "%c", &futureChar);
         if (futureChar == '=')
         {
-          token = CheckTokenNum(futureChar);
+          recent[0] = character;
+          recent[1] = futureChar;
 
-          printf("\t%s\t\t%d\n", futureChar, token);
+          token = CheckTokenNum(recent);
+
+          printf("\t%s\t\t%d\n", recent, token);
         }
         else
           fseek(input, -1, SEEK_CUR);
@@ -176,9 +208,12 @@ int main(int argc, char *args[])
         fscanf(input, "%c", &futureChar);
         if (futureChar == '>' || futureChar == '=')
         {
-          token = CheckTokenNum(futureChar);
+          recent[0] = character;
+          recent[1] = futureChar;
 
-          printf("\t%s\t\t%d\n", futureChar, token);
+          token = CheckTokenNum(recent);
+
+          printf("\t%s\t\t%d\n", recent, token);
         }
         else
           fseek(input, -1, SEEK_CUR);
@@ -188,16 +223,23 @@ int main(int argc, char *args[])
         fscanf(input, "%c", &futureChar);
         if (futureChar == '=')
         {
-          token = CheckTokenNum(futureChar);
+          recent[0] = character;
+          recent[1] = futureChar;
 
-          printf("\t%s\t\t%d\n", futureChar, token);
+          token = CheckTokenNum(recent);
+
+          printf("\t%s\t\t%d\n", recent, token);
         }
         else
           fseek(input, -1, SEEK_CUR);
       }
       else
       {
-        printf("Special character AAAAAAAAA: %c\n", character);
+        recent[0] = character;
+
+        token = CheckTokenNum(recent);
+
+        printf("\t%s\t\t%d\n", recent, token);
       }
 
     }
@@ -211,31 +253,11 @@ int main(int argc, char *args[])
       }
       else if (!iscntrl(character) && character != ' ')
       {
-        printf("Number: %c\n", character);
+        printf("\t%c\t\t3\n", character);
       }
     }
-
-    int stringLength = 0, token = 0;
 
     // ERROR HANDLING HERE
-
-    if (wordFound)
-    {
-      // Here comes the big ladder
-      token = CheckTokenNum(word);
-
-      printf("\t%s\t\t%d\n", word, token);
-
-      if (strcmp(word, "end") == 0)
-      {
-        break;
-      }
-
-      // Reset word
-      memset(word, 0, sizeof(word));
-      wordFound = false;
-    }
-
 
   }
 
@@ -361,7 +383,7 @@ int CheckTokenNum(char *word)
   }
   else
   {
-    if (currentlyVar)
+    if (currentlyVar || IsVar(word))
       return 2;
 
     if (isdigit(word[(int)strlen(word) - 1]))
