@@ -125,6 +125,8 @@ int main(int argc, char *args[])
             //printf("New var: %s\n", word);
             strcpy(varWords[varCount], word);
             varCount++;
+            if (varCount > 5)
+               printf("Error : Numbers cannot exceed 5 digits");
           }
         }
 
@@ -257,6 +259,8 @@ int main(int argc, char *args[])
       {
         word[wordCounter] = character;
         wordCounter++;
+        if(wordCounter > 11)
+           printf("Error : Identifier names cannot exceed 11 characters");
       }
       else if (!iscntrl(character) && character != ' ')
       {
