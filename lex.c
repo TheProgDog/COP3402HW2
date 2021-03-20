@@ -1,3 +1,5 @@
+// Authored by: Daniel Hernandez-Otero, Joel Joy
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -81,13 +83,13 @@ int main(int argc, char *args[])
   char character;
   char futureChar;
 
-  char *tokenList = "";
+  char *tokenList = malloc(200 * sizeof(char));
+  char *conversion = malloc(sizeof(char));
   char word[50];
 
   int wordCounter = 0, varCount = 0;
 
   bool isComment = false;
-  bool wordFound = false;
 
   FILE *input = fopen(args[1], "r");
 
@@ -122,16 +124,32 @@ int main(int argc, char *args[])
           else if (!(strcmp(word, " ") == 0))
           {
             // This is a new variable
-            //printf("New var: %s\n", word);
             strcpy(varWords[varCount], word);
             varCount++;
+            if (strlen(word) > 11)
+               printf("Error : Identifier names cannot exceed 11 characters\n");
           }
         }
 
+        if (isdigit(character))
+          printf("Number\n");
+
         // Here comes the big ladder
         token = CheckTokenNum(word);
+        if (!(strlen(word) > 11))
+        {
+          printf("\t%s\t\t%d\n", word, token);
+          sprintf(conversion,"%d ", token);
+          strncat(tokenList, conversion, strlen(conversion));
+          printf("Adding %s to tokenList\n", conversion);
+        }
+        if (token == 2)
+        {
+          strncat(tokenList, word, strlen(word));
+          printf("Here\n");
+          strncat(tokenList, " ", 1);
+        }
 
-        printf("\t%s\t\t%d\n", word, token);
 
         if (strcmp(word, "end") == 0)
         {
@@ -141,13 +159,15 @@ int main(int argc, char *args[])
 
           lastChar[0] = character;
 
-          printf("\t%c\t\t%d\n", character, CheckTokenNum(lastChar));
+          token = CheckTokenNum(lastChar);
+          printf("\t%c\t\t%d\n", character, token);
+          sprintf(conversion,"%d ", token);
+          strncat(tokenList, conversion, strlen(conversion));
           break;
         }
 
         // Reset word
         memset(word, 0, sizeof(word));
-        wordFound = false;
 
         // Recognize special character
         if (EndOfWord(character) && character != ' ')
@@ -161,9 +181,10 @@ int main(int argc, char *args[])
           token = CheckTokenNum(special);
 
           printf("\t%s\t\t%d\n", special, token);
+          sprintf(conversion,"%d ", token);
+          strncat(tokenList, conversion, strlen(conversion));
         }
 
-        wordFound = true;
       }
     }
     else if (wordCounter == 0 && EndOfWord(character) && character != ' ')
@@ -175,78 +196,92 @@ int main(int argc, char *args[])
 
       memset(recent, 0, sizeof(recent));
 
-      if (character == '/')
+      if (!isComment)
       {
-        fscanf(input, "%c", &futureChar);
-        if (futureChar == '*')
-          isComment = true;
-        else
-          fseek(input, -1, SEEK_CUR);
-      }
-      else if (character == '*')
-      {
-        fscanf(input, "%c", &futureChar);
-        if (futureChar == '/')
-          isComment = false;
-        else
+        if (character == '/')
         {
-          recent[0] = character;
-          printf("\t%c\t\t%d\n", character, CheckTokenNum(recent));
-          fseek(input, -1, SEEK_CUR);
+          fscanf(input, "%c", &futureChar);
+          if (futureChar == '*')
+            isComment = true;
+          else
+            fseek(input, -1, SEEK_CUR);
         }
-      }
-      else if (character == ':')
-      {
-        fscanf(input, "%c", &futureChar);
-        if (futureChar == '=')
+        else if (character == '*')
+        {
+          fscanf(input, "%c", &futureChar);
+          if (futureChar == '/')
+            isComment = false;
+          else
+          {
+            recent[0] = character;
+            token = CheckTokenNum(recent);
+            printf("\t%c\t\t%d\n", character, token);
+            sprintf(conversion,"%d ", token);
+            strncat(tokenList, conversion, strlen(conversion));
+            fseek(input, -1, SEEK_CUR);
+          }
+        }
+        else if (character == ':')
+        {
+          fscanf(input, "%c", &futureChar);
+          if (futureChar == '=')
+          {
+            recent[0] = character;
+            recent[1] = futureChar;
+
+            token = CheckTokenNum(recent);
+
+            printf("\t%s\t\t%d\n", recent, token);
+            sprintf(conversion,"%d ", token);
+            strncat(tokenList, conversion, strlen(conversion));
+          }
+          else
+            fseek(input, -1, SEEK_CUR);
+        }
+        else if (character == '<')
+        {
+          fscanf(input, "%c", &futureChar);
+          if (futureChar == '>' || futureChar == '=')
+          {
+            recent[0] = character;
+            recent[1] = futureChar;
+
+            token = CheckTokenNum(recent);
+
+            printf("\t%s\t\t%d\n", recent, token);
+            sprintf(conversion,"%d ", token);
+            strncat(tokenList, conversion, strlen(conversion));
+          }
+          else
+            fseek(input, -1, SEEK_CUR);
+        }
+        else if (character == '>')
+        {
+          fscanf(input, "%c", &futureChar);
+          if (futureChar == '=')
+          {
+            recent[0] = character;
+            recent[1] = futureChar;
+
+            token = CheckTokenNum(recent);
+
+            printf("\t%s\t\t%d\n", recent, token);
+            sprintf(conversion,"%d ", token);
+            strncat(tokenList, conversion, strlen(conversion));
+          }
+          else
+            fseek(input, -1, SEEK_CUR);
+        }
+        else
         {
           recent[0] = character;
-          recent[1] = futureChar;
 
           token = CheckTokenNum(recent);
 
           printf("\t%s\t\t%d\n", recent, token);
+          sprintf(conversion,"%d ", token);
+          strncat(tokenList, conversion, strlen(conversion));
         }
-        else
-          fseek(input, -1, SEEK_CUR);
-      }
-      else if (character == '<')
-      {
-        fscanf(input, "%c", &futureChar);
-        if (futureChar == '>' || futureChar == '=')
-        {
-          recent[0] = character;
-          recent[1] = futureChar;
-
-          token = CheckTokenNum(recent);
-
-          printf("\t%s\t\t%d\n", recent, token);
-        }
-        else
-          fseek(input, -1, SEEK_CUR);
-      }
-      else if (character == '>')
-      {
-        fscanf(input, "%c", &futureChar);
-        if (futureChar == '=')
-        {
-          recent[0] = character;
-          recent[1] = futureChar;
-
-          token = CheckTokenNum(recent);
-
-          printf("\t%s\t\t%d\n", recent, token);
-        }
-        else
-          fseek(input, -1, SEEK_CUR);
-      }
-      else
-      {
-        recent[0] = character;
-
-        token = CheckTokenNum(recent);
-
-        printf("\t%s\t\t%d\n", recent, token);
       }
 
     }
@@ -257,17 +292,22 @@ int main(int argc, char *args[])
       {
         word[wordCounter] = character;
         wordCounter++;
+
       }
       else if (!iscntrl(character) && character != ' ')
       {
         printf("\t%c\t\t3\n", character);
+        sprintf(conversion,"%d ", 3);
+        strncat(tokenList, conversion, strlen(conversion));
+        strncat(tokenList, &character, 1);
+        strncat(tokenList, " ", 1);
       }
     }
 
     // ERROR HANDLING HERE
 
   }
-
+  printf("%s",tokenList);
   fclose(input);
 
   return 0;
